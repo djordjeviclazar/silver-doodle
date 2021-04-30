@@ -1,0 +1,32 @@
+[
+  {
+    "Type": "Room"
+  },
+  {
+    "Type": "Apartment"
+  },
+  {
+    "Type": "Ski"
+  },
+  {
+    "Type": "Sport"
+  },
+  {
+    "Type": "Club"
+  },
+  {
+    "Type": "Cafe"
+  },
+  {
+    "Type": "Monument tour"
+  },
+  {
+    "Type": "Hiking"
+  },
+  {
+    "Type": "Carting"
+  },
+  {
+    "Type": "Cruiser"
+  }
+]
