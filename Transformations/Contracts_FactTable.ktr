@@ -6,6 +6,7 @@
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
+    <trans_status>0</trans_status>
     <directory>/</directory>
     <parameters>
     </parameters>
@@ -609,8 +610,8 @@
       <schema_name/>
     </partitioning>
     <connection>MySQLConn</connection>
-    <sql>SELECT Id AS ID, TouristId AS TOURIST_ID, ServiceId AS SERVICE_ID, CAST(DateFrom AS DATE) AS START_DATE, 
-CAST(DateTo AS DATE) AS END_DATE, DATEDIFF(DateTo, DateFrom) AS DURATION, NumberOfTourists,
+    <sql>SELECT C.Id AS ID, C.TouristId AS TOURIST_ID, C.ServiceId AS SERVICE_ID, CAST(C.DateFrom AS DATE) AS START_DATE, 
+CAST(C.DateTo AS DATE) AS END_DATE, DATEDIFF(C.DateTo, C.DateFrom) AS DURATION, C.NumberOfTourists,
 /*
 IF (MONTH(DateFrom)=1 OR ((YEAR(DateFrom) &lt; YEAR(DateTo)) AND (MONTH(DateTo) >= 1) AND MONTH(DateFrom > 1)), NumberOfTourists, 0) AS Jan,
 IF (MONTH(DateFrom)=2 OR (MONTH(DateFrom) &lt; 2 AND MONTH(DateTo) >= 2) OR ((YEAR(DateFrom) &lt; YEAR(DateTo)) AND (MONTH(DateTo) >= 2)), NumberOfTourists, 0) AS Feb,
@@ -625,14 +626,15 @@ IF (MONTH(DateFrom)=10 OR (MONTH(DateFrom) &lt; 10 AND MONTH(DateTo) >= 10) OR (
 IF (MONTH(DateFrom)=11 OR (MONTH(DateFrom) &lt; 11 AND MONTH(DateTo) >= 11) OR ((YEAR(DateFrom) &lt; YEAR(DateTo)) AND (MONTH(DateTo) >= 11)), NumberOfTourists, 0) AS Nov,
 IF (MONTH(DateFrom)=12 OR (MONTH(DateFrom) &lt; 12 AND MONTH(DateTo) >= 12) OR ((YEAR(DateFrom) &lt; YEAR(DateTo)) AND (MONTH(DateTo) >= 12)), NumberOfTourists, 0) AS Decem,
 */
-ContractCanceled AS CANCELED, IsPaid AS PAID, CancelRequested AS CANCEL_REQUESTED, Price,
+C.ContractCanceled AS CANCELED, C.IsPaid AS PAID, C.CancelRequested AS CANCEL_REQUESTED, C.Price,
+IF (C.ContractCanceled = 0, Price, 0) AS REVENUE,
+IF (C.ContractCanceled = 1, Price, 0) AS LOSS,
 
-IF (ContractCanceled = 0, Price, 0) AS REVENUE,
-IF (ContractCanceled = 1, Price, 0) AS LOSS,
+CAST(C.DateCreated AS DATE) AS RESERVATION_DATE,
+R.Grade AS Gradea,
+IF(R.Grade IS NULL, 0, R.Grade) AS GRADES
 
-CAST(DateCreated AS DATE) AS RESERVATION_DATE
-
-FROM contract</sql>
+FROM contract AS C LEFT OUTER JOIN review AS R ON C.Id = R.ContractId</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>
@@ -962,6 +964,52 @@ FROM contract</sql>
         <date_format_timezone>Europe/Prague</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>Gradea</name>
+        <length>9</length>
+        <precision>0</precision>
+        <origin>Contract input</origin>
+        <comments>Gradea</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Prague</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>GRADES</name>
+        <length>15</length>
+        <precision>0</precision>
+        <origin>Contract input</origin>
+        <comments>GRADES</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Prague</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
     </row-meta>
     <attributes/>
     <cluster_schema/>
@@ -978,7 +1026,7 @@ FROM contract</sql>
     </GUI>
   </step>
   <step>
-    <name>Tourist_Dim lookup</name>
+    <name>DateFrom_Dim lookup</name>
     <type>DimensionLookup</type>
     <description/>
     <distribute>Y</distribute>
@@ -989,14 +1037,14 @@ FROM contract</sql>
       <schema_name/>
     </partitioning>
     <schema>supertourist_mart</schema>
-    <table>tourist_dim</table>
+    <table>datefrom_dim</table>
     <connection>DataMartConn</connection>
     <commit>100</commit>
     <update>N</update>
     <fields>
       <key>
-        <name>TOURIST_ID</name>
-        <lookup>tourist_id</lookup>
+        <name>START_DATE</name>
+        <lookup>Contract_Date</lookup>
       </key>
       <date>
         <name/>
@@ -1004,7 +1052,7 @@ FROM contract</sql>
         <to>date_to</to>
       </date>
       <return>
-        <name>TOURIST_DIM_ID</name>
+        <name>CONTRACT_DATE_FROM_ID</name>
         <rename/>
         <creation_method>tablemax</creation_method>
         <use_autoinc>N</use_autoinc>
@@ -1029,13 +1077,13 @@ FROM contract</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>224</xloc>
-      <yloc>208</yloc>
+      <xloc>576</xloc>
+      <yloc>352</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
   <step>
-    <name>Service_Dim lookup</name>
+    <name>DateTo_Dim lookup</name>
     <type>DimensionLookup</type>
     <description/>
     <distribute>Y</distribute>
@@ -1046,14 +1094,14 @@ FROM contract</sql>
       <schema_name/>
     </partitioning>
     <schema>supertourist_mart</schema>
-    <table>service_dim</table>
+    <table>dateto_dim</table>
     <connection>DataMartConn</connection>
     <commit>100</commit>
     <update>N</update>
     <fields>
       <key>
-        <name>SERVICE_ID</name>
-        <lookup>SERVICE_ID</lookup>
+        <name>END_DATE</name>
+        <lookup>Contract_Date</lookup>
       </key>
       <date>
         <name/>
@@ -1061,7 +1109,7 @@ FROM contract</sql>
         <to>date_to</to>
       </date>
       <return>
-        <name>SERVICE_DIM_ID</name>
+        <name>CONTRACT_DATE_TO_ID</name>
         <rename/>
         <creation_method>tablemax</creation_method>
         <use_autoinc>N</use_autoinc>
@@ -1086,8 +1134,8 @@ FROM contract</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>368</xloc>
-      <yloc>208</yloc>
+      <xloc>416</xloc>
+      <yloc>352</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
@@ -1144,6 +1192,208 @@ FROM contract</sql>
     </remotesteps>
     <GUI>
       <xloc>640</xloc>
+      <yloc>208</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Fact_Table</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <connection>DataMartConn</connection>
+    <schema>supertourist_mart</schema>
+    <table>fact_table</table>
+    <commit>1000</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <fields>
+      <field>
+        <column_name>CONTRACT_ID</column_name>
+        <stream_name>ID</stream_name>
+      </field>
+      <field>
+        <column_name>TOURIST_DIM_ID</column_name>
+        <stream_name>TOURIST_DIM_ID</stream_name>
+      </field>
+      <field>
+        <column_name>SERVICE_DIM_ID</column_name>
+        <stream_name>SERVICE_DIM_ID</stream_name>
+      </field>
+      <field>
+        <column_name>CREATE_CONTRACT_DATE_ID</column_name>
+        <stream_name>CREATE_CONTRACT_DATE_ID</stream_name>
+      </field>
+      <field>
+        <column_name>TOTAL_REVENUE</column_name>
+        <stream_name>TOTAL_REVENUE</stream_name>
+      </field>
+      <field>
+        <column_name>TOTAL_LOSS</column_name>
+        <stream_name>TOTAL_LOSS</stream_name>
+      </field>
+      <field>
+        <column_name>CONTRACT_DURATION</column_name>
+        <stream_name>CONTRACT_DURATION</stream_name>
+      </field>
+      <field>
+        <column_name>CONTRACT_DATE_FROM_ID</column_name>
+        <stream_name>CONTRACT_DATE_FROM_ID</stream_name>
+      </field>
+      <field>
+        <column_name>CONTRACT_DATE_TO_ID</column_name>
+        <stream_name>CONTRACT_DATE_TO_ID</stream_name>
+      </field>
+      <field>
+        <column_name>VISITORS</column_name>
+        <stream_name>VISITORS</stream_name>
+      </field>
+      <field>
+        <column_name>GRADES</column_name>
+        <stream_name>GRADES</stream_name>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>1056</xloc>
+      <yloc>208</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Review_Dim lookup</name>
+    <type>DimensionLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <schema>supertourist_mart</schema>
+    <table>review_dim</table>
+    <connection>DataMartConn</connection>
+    <commit>100</commit>
+    <update>Y</update>
+    <fields>
+      <key>
+        <name>ID</name>
+        <lookup>Contract_Id</lookup>
+      </key>
+      <date>
+        <name/>
+        <from>date_from</from>
+        <to>date_to</to>
+      </date>
+      <return>
+        <name>REVIEW_DIM_ID</name>
+        <rename/>
+        <creation_method>tablemax</creation_method>
+        <use_autoinc>N</use_autoinc>
+        <version>version</version>
+      </return>
+    </fields>
+    <sequence/>
+    <min_year>1900</min_year>
+    <max_year>2199</max_year>
+    <cache_size>5000</cache_size>
+    <preload_cache>N</preload_cache>
+    <use_start_date_alternative>N</use_start_date_alternative>
+    <start_date_alternative>none</start_date_alternative>
+    <start_date_field_name/>
+    <useBatch>N</useBatch>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>752</xloc>
+      <yloc>352</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Service_Dim lookup</name>
+    <type>DimensionLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <schema>supertourist_mart</schema>
+    <table>service_dim</table>
+    <connection>DataMartConn</connection>
+    <commit>100</commit>
+    <update>N</update>
+    <fields>
+      <key>
+        <name>SERVICE_ID</name>
+        <lookup>SERVICE_ID</lookup>
+      </key>
+      <date>
+        <name/>
+        <from>date_from</from>
+        <to>date_to</to>
+      </date>
+      <return>
+        <name>SERVICE_DIM_ID</name>
+        <rename/>
+        <creation_method>tablemax</creation_method>
+        <use_autoinc>N</use_autoinc>
+        <version>version</version>
+      </return>
+    </fields>
+    <sequence/>
+    <min_year>1900</min_year>
+    <max_year>2199</max_year>
+    <cache_size>-1</cache_size>
+    <preload_cache>N</preload_cache>
+    <use_start_date_alternative>N</use_start_date_alternative>
+    <start_date_alternative>none</start_date_alternative>
+    <start_date_field_name/>
+    <useBatch>N</useBatch>
+    <attributes/>
+    <cluster_schema/>
+    <remotesteps>
+      <input>
+      </input>
+      <output>
+      </output>
+    </remotesteps>
+    <GUI>
+      <xloc>368</xloc>
       <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
@@ -1220,6 +1470,21 @@ FROM contract</sql>
       <grouping_symbol/>
       <currency_symbol/>
     </calculation>
+    <calculation>
+      <field_name>GRADE</field_name>
+      <calc_type>COPY_FIELD</calc_type>
+      <field_a>GRADES</field_a>
+      <field_b/>
+      <field_c/>
+      <value_type>Number</value_type>
+      <value_length>-1</value_length>
+      <value_precision>-1</value_precision>
+      <remove>N</remove>
+      <conversion_mask/>
+      <decimal_symbol/>
+      <grouping_symbol/>
+      <currency_symbol/>
+    </calculation>
     <attributes/>
     <cluster_schema/>
     <remotesteps>
@@ -1235,7 +1500,7 @@ FROM contract</sql>
     </GUI>
   </step>
   <step>
-    <name>Review_Dim lookup</name>
+    <name>Tourist_Dim lookup</name>
     <type>DimensionLookup</type>
     <description/>
     <distribute>Y</distribute>
@@ -1246,14 +1511,14 @@ FROM contract</sql>
       <schema_name/>
     </partitioning>
     <schema>supertourist_mart</schema>
-    <table>review_dim</table>
+    <table>tourist_dim</table>
     <connection>DataMartConn</connection>
     <commit>100</commit>
-    <update>Y</update>
+    <update>N</update>
     <fields>
       <key>
-        <name>ID</name>
-        <lookup>Contract_Id</lookup>
+        <name>TOURIST_ID</name>
+        <lookup>tourist_id</lookup>
       </key>
       <date>
         <name/>
@@ -1261,7 +1526,7 @@ FROM contract</sql>
         <to>date_to</to>
       </date>
       <return>
-        <name>REVIEW_DIM_ID</name>
+        <name>TOURIST_DIM_ID</name>
         <rename/>
         <creation_method>tablemax</creation_method>
         <use_autoinc>N</use_autoinc>
@@ -1271,7 +1536,7 @@ FROM contract</sql>
     <sequence/>
     <min_year>1900</min_year>
     <max_year>2199</max_year>
-    <cache_size>5000</cache_size>
+    <cache_size>-1</cache_size>
     <preload_cache>N</preload_cache>
     <use_start_date_alternative>N</use_start_date_alternative>
     <start_date_alternative>none</start_date_alternative>
@@ -1286,206 +1551,8 @@ FROM contract</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>752</xloc>
-      <yloc>352</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>Fact_Table</name>
-    <type>TableOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <connection>DataMartConn</connection>
-    <schema>supertourist_mart</schema>
-    <table>fact_table</table>
-    <commit>1000</commit>
-    <truncate>N</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>Y</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-      <field>
-        <column_name>CONTRACT_ID</column_name>
-        <stream_name>ID</stream_name>
-      </field>
-      <field>
-        <column_name>TOURIST_DIM_ID</column_name>
-        <stream_name>TOURIST_DIM_ID</stream_name>
-      </field>
-      <field>
-        <column_name>SERVICE_DIM_ID</column_name>
-        <stream_name>SERVICE_DIM_ID</stream_name>
-      </field>
-      <field>
-        <column_name>CREATE_CONTRACT_DATE_ID</column_name>
-        <stream_name>CREATE_CONTRACT_DATE_ID</stream_name>
-      </field>
-      <field>
-        <column_name>TOTAL_REVENUE</column_name>
-        <stream_name>TOTAL_REVENUE</stream_name>
-      </field>
-      <field>
-        <column_name>TOTAL_LOSS</column_name>
-        <stream_name>TOTAL_LOSS</stream_name>
-      </field>
-      <field>
-        <column_name>CONTRACT_DURATION</column_name>
-        <stream_name>CONTRACT_DURATION</stream_name>
-      </field>
-      <field>
-        <column_name>CONTRACT_DATE_FROM_ID</column_name>
-        <stream_name>CONTRACT_DATE_FROM_ID</stream_name>
-      </field>
-      <field>
-        <column_name>CONTRACT_DATE_TO_ID</column_name>
-        <stream_name>CONTRACT_DATE_TO_ID</stream_name>
-      </field>
-      <field>
-        <column_name>VISITORS</column_name>
-        <stream_name>VISITORS</stream_name>
-      </field>
-    </fields>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>1056</xloc>
+      <xloc>224</xloc>
       <yloc>208</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>DateTo_Dim lookup</name>
-    <type>DimensionLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <schema>supertourist_mart</schema>
-    <table>dateto_dim</table>
-    <connection>DataMartConn</connection>
-    <commit>100</commit>
-    <update>N</update>
-    <fields>
-      <key>
-        <name>END_DATE</name>
-        <lookup>Contract_Date</lookup>
-      </key>
-      <date>
-        <name/>
-        <from>date_from</from>
-        <to>date_to</to>
-      </date>
-      <return>
-        <name>CONTRACT_DATE_TO_ID</name>
-        <rename/>
-        <creation_method>tablemax</creation_method>
-        <use_autoinc>N</use_autoinc>
-        <version>version</version>
-      </return>
-    </fields>
-    <sequence/>
-    <min_year>1900</min_year>
-    <max_year>2199</max_year>
-    <cache_size>-1</cache_size>
-    <preload_cache>N</preload_cache>
-    <use_start_date_alternative>N</use_start_date_alternative>
-    <start_date_alternative>none</start_date_alternative>
-    <start_date_field_name/>
-    <useBatch>N</useBatch>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>416</xloc>
-      <yloc>352</yloc>
-      <draw>Y</draw>
-    </GUI>
-  </step>
-  <step>
-    <name>DateFrom_Dim lookup</name>
-    <type>DimensionLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <schema>supertourist_mart</schema>
-    <table>datefrom_dim</table>
-    <connection>DataMartConn</connection>
-    <commit>100</commit>
-    <update>N</update>
-    <fields>
-      <key>
-        <name>START_DATE</name>
-        <lookup>Contract_Date</lookup>
-      </key>
-      <date>
-        <name/>
-        <from>date_from</from>
-        <to>date_to</to>
-      </date>
-      <return>
-        <name>CONTRACT_DATE_FROM_ID</name>
-        <rename/>
-        <creation_method>tablemax</creation_method>
-        <use_autoinc>N</use_autoinc>
-        <version>version</version>
-      </return>
-    </fields>
-    <sequence/>
-    <min_year>1900</min_year>
-    <max_year>2199</max_year>
-    <cache_size>-1</cache_size>
-    <preload_cache>N</preload_cache>
-    <use_start_date_alternative>N</use_start_date_alternative>
-    <start_date_alternative>none</start_date_alternative>
-    <start_date_field_name/>
-    <useBatch>N</useBatch>
-    <attributes/>
-    <cluster_schema/>
-    <remotesteps>
-      <input>
-      </input>
-      <output>
-      </output>
-    </remotesteps>
-    <GUI>
-      <xloc>576</xloc>
-      <yloc>352</yloc>
       <draw>Y</draw>
     </GUI>
   </step>
