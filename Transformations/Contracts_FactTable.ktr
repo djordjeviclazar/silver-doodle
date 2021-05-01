@@ -632,8 +632,8 @@ IF (C.ContractCanceled = 1, Price, 0) AS LOSS,
 
 CAST(C.DateCreated AS DATE) AS RESERVATION_DATE,
 R.Grade AS Gradea,
-IF(R.Grade IS NULL, 0, R.Grade) AS GRADES
-
+IF(R.Grade IS NULL, 0, R.Grade) AS GRADES, /*Not needed, in calculator NULL -> 0 when type is NUMBER*/
+IF(R.Grade IS NULL, 0, 1) AS NUMBER_OF_REVIEWS
 FROM contract AS C LEFT OUTER JOIN review AS R ON C.Id = R.ContractId</sql>
     <limit>0</limit>
     <lookup/>
@@ -1010,6 +1010,29 @@ FROM contract AS C LEFT OUTER JOIN review AS R ON C.Id = R.ContractId</sql>
         <date_format_timezone>Europe/Prague</date_format_timezone>
         <lenient_string_to_number>N</lenient_string_to_number>
       </value-meta>
+      <value-meta>
+        <type>Integer</type>
+        <storagetype>normal</storagetype>
+        <name>NUMBER_OF_REVIEWS</name>
+        <length>15</length>
+        <precision>0</precision>
+        <origin>Contract input</origin>
+        <comments>NUMBER_OF_REVIEWS</comments>
+        <conversion_Mask>####0;-####0</conversion_Mask>
+        <decimal_symbol>.</decimal_symbol>
+        <grouping_symbol>,</grouping_symbol>
+        <currency_symbol/>
+        <trim_type>none</trim_type>
+        <case_insensitive>N</case_insensitive>
+        <collator_disabled>Y</collator_disabled>
+        <collator_strength>0</collator_strength>
+        <sort_descending>N</sort_descending>
+        <output_padding>N</output_padding>
+        <date_format_lenient>N</date_format_lenient>
+        <date_format_locale>en_US</date_format_locale>
+        <date_format_timezone>Europe/Prague</date_format_timezone>
+        <lenient_string_to_number>N</lenient_string_to_number>
+      </value-meta>
     </row-meta>
     <attributes/>
     <cluster_schema/>
@@ -1269,6 +1292,10 @@ FROM contract AS C LEFT OUTER JOIN review AS R ON C.Id = R.ContractId</sql>
         <column_name>GRADES</column_name>
         <stream_name>GRADES</stream_name>
       </field>
+      <field>
+        <column_name>REVIEW_NUMBER</column_name>
+        <stream_name>REVIEW_NUMBER</stream_name>
+      </field>
     </fields>
     <attributes/>
     <cluster_schema/>
@@ -1474,6 +1501,21 @@ FROM contract AS C LEFT OUTER JOIN review AS R ON C.Id = R.ContractId</sql>
       <field_name>GRADE</field_name>
       <calc_type>COPY_FIELD</calc_type>
       <field_a>GRADES</field_a>
+      <field_b/>
+      <field_c/>
+      <value_type>Number</value_type>
+      <value_length>-1</value_length>
+      <value_precision>-1</value_precision>
+      <remove>N</remove>
+      <conversion_mask/>
+      <decimal_symbol/>
+      <grouping_symbol/>
+      <currency_symbol/>
+    </calculation>
+    <calculation>
+      <field_name>REVIEW_NUMBER</field_name>
+      <calc_type>COPY_FIELD</calc_type>
+      <field_a>NUMBER_OF_REVIEWS</field_a>
       <field_b/>
       <field_c/>
       <value_type>Number</value_type>
