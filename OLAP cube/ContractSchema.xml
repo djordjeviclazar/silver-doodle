@@ -1,0 +1,86 @@
+<Schema name="Contract Schema">
+  <Cube name="Contract Cube" visible="true" cache="true" enabled="true">
+    <Table name="fact_table">
+    </Table>
+    <Dimension type="StandardDimension" visible="true" foreignKey="TOURIST_DIM_ID" name="Tourist">
+      <Hierarchy name="Default" visible="true" hasAll="true" primaryKey="TOURIST_DIM_ID">
+        <Table name="tourist_dim">
+        </Table>
+        <Level name="TouristCountry" visible="true" table="tourist_dim" column="Country" uniqueMembers="false">
+        </Level>
+        <Level name="TouristCity" visible="true" table="tourist_dim" column="City" uniqueMembers="false">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Dimension type="StandardDimension" visible="true" foreignKey="SERVICE_DIM_ID" name="Service">
+      <Hierarchy name="Default" visible="true" hasAll="true">
+        <Table name="service_dim">
+        </Table>
+        <Level name="Type" visible="true" table="service_dim" column="TYPE" uniqueMembers="false">
+        </Level>
+        <Level name="NumberOfPeople" visible="true" table="service_dim" column="PEOPLE" uniqueMembers="false">
+        </Level>
+        <Level name="LocationFrom" visible="true" table="service_dim" column="LOCATION_FROM" uniqueMembers="false">
+        </Level>
+        <Level name="LocationTo" visible="true" table="service_dim" column="LOCATION_TO" uniqueMembers="false">
+        </Level>
+        <Level name="Agency" visible="true" table="service_dim" column="AgencyName" uniqueMembers="false">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Dimension type="TimeDimension" visible="true" foreignKey="CONTRACT_DATE_FROM_ID" name="DateFrom">
+      <Hierarchy name="Default" visible="true" hasAll="true">
+        <Table name="datefrom_dim">
+        </Table>
+        <Level name="Year" visible="true" table="datefrom_dim" column="Year" uniqueMembers="false" levelType="TimeYears">
+        </Level>
+        <Level name="Quarter" visible="true" table="datefrom_dim" column="Quarter" uniqueMembers="false" levelType="TimeQuarters">
+        </Level>
+        <Level name="Month" visible="true" table="datefrom_dim" column="Month" uniqueMembers="false" levelType="TimeMonths">
+        </Level>
+        <Level name="Day" visible="true" table="datefrom_dim" column="Day_Of_Year" uniqueMembers="false" levelType="TimeDays">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Dimension type="TimeDimension" visible="true" foreignKey="CONTRACT_DATE_TO_ID" name="DateTo">
+      <Hierarchy name="Default" visible="true" hasAll="true">
+        <Table name="dateto_dim" alias="">
+        </Table>
+        <Level name="Year" visible="true" table="dateto_dim" column="Year" uniqueMembers="false" levelType="TimeYears">
+        </Level>
+        <Level name="Quarter" visible="true" table="dateto_dim" column="Quarter" uniqueMembers="false" levelType="TimeQuarters">
+        </Level>
+        <Level name="Month" visible="true" table="dateto_dim" column="Month" uniqueMembers="false" levelType="TimeMonths">
+        </Level>
+        <Level name="Day" visible="true" table="dateto_dim" column="Day_Of_Year" uniqueMembers="false" levelType="TimeDays">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Dimension type="TimeDimension" visible="true" foreignKey="CREATE_CONTRACT_DATE_ID" name="ReservationDate">
+      <Hierarchy name="Default" visible="true" hasAll="true">
+        <Table name="date_dim">
+        </Table>
+        <Level name="Year" visible="true" table="date_dim" column="Year" uniqueMembers="false" levelType="TimeYears">
+        </Level>
+        <Level name="Quarter" visible="true" table="date_dim" column="Quarter" uniqueMembers="false" levelType="TimeQuarters">
+        </Level>
+        <Level name="Month" visible="true" table="date_dim" column="Month" uniqueMembers="false" levelType="TimeMonths">
+        </Level>
+        <Level name="Day" visible="true" table="date_dim" column="Day_Of_Year" uniqueMembers="false" levelType="TimeDays">
+        </Level>
+      </Hierarchy>
+    </Dimension>
+    <Measure name="TOTAL_REVENUE" column="TOTAL_REVENUE" aggregator="sum" visible="true">
+    </Measure>
+    <Measure name="TOTAL_LOSS" column="TOTAL_LOSS" aggregator="sum" visible="true">
+    </Measure>
+    <Measure name="DURATION_AVG" column="CONTRACT_DURATION" aggregator="avg" visible="true">
+    </Measure>
+    <Measure name="TOTAL_VISITORS" column="VISITORS" aggregator="sum" visible="true">
+    </Measure>
+    <Measure name="GRADE_SUM" column="GRADES" aggregator="sum" visible="true">
+    </Measure>
+    <Measure name="NUMBER_OF_REVIEWS" column="REVIEW_NUMBER" aggregator="sum" visible="true">
+    </Measure>
+  </Cube>
+</Schema>
