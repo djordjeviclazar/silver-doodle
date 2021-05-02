@@ -2,71 +2,71 @@
   <Cube name="Contract Cube" visible="true" cache="true" enabled="true">
     <Table name="fact_table">
     </Table>
-    <Dimension type="StandardDimension" visible="true" foreignKey="TOURIST_DIM_ID" name="Tourist">
+    <Dimension type="StandardDimension" visible="true" foreignKey="TOURIST_DIM_ID" highCardinality="false" name="Tourist">
       <Hierarchy name="Default" visible="true" hasAll="true" primaryKey="TOURIST_DIM_ID">
         <Table name="tourist_dim">
         </Table>
-        <Level name="TouristCountry" visible="true" table="tourist_dim" column="Country" uniqueMembers="false">
+        <Level name="TouristCountry" visible="true" table="tourist_dim" column="Country" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
         </Level>
-        <Level name="TouristCity" visible="true" table="tourist_dim" column="City" uniqueMembers="false">
+        <Level name="TouristCity" visible="true" table="tourist_dim" column="City" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
         </Level>
       </Hierarchy>
     </Dimension>
-    <Dimension type="StandardDimension" visible="true" foreignKey="SERVICE_DIM_ID" name="Service">
-      <Hierarchy name="Default" visible="true" hasAll="true">
+    <Dimension type="StandardDimension" visible="true" foreignKey="SERVICE_DIM_ID" highCardinality="false" name="Service">
+      <Hierarchy name="Default" visible="true" hasAll="true" primaryKey="SERVICE_DIM_ID">
         <Table name="service_dim">
         </Table>
-        <Level name="Type" visible="true" table="service_dim" column="TYPE" uniqueMembers="false">
+        <Level name="Type" visible="true" table="service_dim" column="TYPE" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
         </Level>
-        <Level name="NumberOfPeople" visible="true" table="service_dim" column="PEOPLE" uniqueMembers="false">
+        <Level name="NumberOfPeople" visible="true" table="service_dim" column="PEOPLE" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
         </Level>
-        <Level name="LocationFrom" visible="true" table="service_dim" column="LOCATION_FROM" uniqueMembers="false">
+        <Level name="LocationFrom" visible="true" table="service_dim" column="LOCATION_FROM" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
         </Level>
-        <Level name="LocationTo" visible="true" table="service_dim" column="LOCATION_TO" uniqueMembers="false">
+        <Level name="LocationTo" visible="true" table="service_dim" column="LOCATION_TO" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
         </Level>
-        <Level name="Agency" visible="true" table="service_dim" column="AgencyName" uniqueMembers="false">
+        <Level name="Agency" visible="true" table="service_dim" column="AgencyName" type="String" uniqueMembers="false" levelType="Regular" hideMemberIf="Never">
         </Level>
       </Hierarchy>
     </Dimension>
-    <Dimension type="TimeDimension" visible="true" foreignKey="CONTRACT_DATE_FROM_ID" name="DateFrom">
-      <Hierarchy name="Default" visible="true" hasAll="true">
+    <Dimension type="TimeDimension" visible="true" foreignKey="CONTRACT_DATE_FROM_ID" highCardinality="false" name="DateFrom">
+      <Hierarchy name="Default" visible="true" hasAll="true" primaryKey="CONTRACT_DATE_FROM_ID">
         <Table name="datefrom_dim">
         </Table>
-        <Level name="Year" visible="true" table="datefrom_dim" column="Year" uniqueMembers="false" levelType="TimeYears">
+        <Level name="Year" visible="true" table="datefrom_dim" column="Year" type="String" uniqueMembers="false" levelType="TimeYears" hideMemberIf="Never">
         </Level>
-        <Level name="Quarter" visible="true" table="datefrom_dim" column="Quarter" uniqueMembers="false" levelType="TimeQuarters">
+        <Level name="Quarter" visible="true" table="datefrom_dim" column="Quarter" type="String" uniqueMembers="false" levelType="TimeQuarters" hideMemberIf="Never">
         </Level>
-        <Level name="Month" visible="true" table="datefrom_dim" column="Month" uniqueMembers="false" levelType="TimeMonths">
+        <Level name="Month" visible="true" table="datefrom_dim" column="Month" type="String" uniqueMembers="false" levelType="TimeMonths" hideMemberIf="Never">
         </Level>
-        <Level name="Day" visible="true" table="datefrom_dim" column="Day_Of_Year" uniqueMembers="false" levelType="TimeDays">
+        <Level name="Day" visible="true" table="datefrom_dim" column="Day_Of_Year" type="String" uniqueMembers="false" levelType="TimeDays" hideMemberIf="Never">
         </Level>
       </Hierarchy>
     </Dimension>
-    <Dimension type="TimeDimension" visible="true" foreignKey="CONTRACT_DATE_TO_ID" name="DateTo">
-      <Hierarchy name="Default" visible="true" hasAll="true">
-        <Table name="dateto_dim" alias="">
+    <Dimension type="TimeDimension" visible="true" foreignKey="CONTRACT_DATE_TO_ID" highCardinality="false" name="DateTo">
+      <Hierarchy name="Default" visible="true" hasAll="true" primaryKey="CONTRACT_DATE_TO_ID">
+        <Table name="dateto_dim">
         </Table>
-        <Level name="Year" visible="true" table="dateto_dim" column="Year" uniqueMembers="false" levelType="TimeYears">
+        <Level name="Year" visible="true" table="dateto_dim" column="Year" type="String" uniqueMembers="false" levelType="TimeYears" hideMemberIf="Never">
         </Level>
-        <Level name="Quarter" visible="true" table="dateto_dim" column="Quarter" uniqueMembers="false" levelType="TimeQuarters">
+        <Level name="Quarter" visible="true" table="dateto_dim" column="Quarter" type="String" uniqueMembers="false" levelType="TimeQuarters" hideMemberIf="Never">
         </Level>
-        <Level name="Month" visible="true" table="dateto_dim" column="Month" uniqueMembers="false" levelType="TimeMonths">
+        <Level name="Month" visible="true" table="dateto_dim" column="Month" type="String" uniqueMembers="false" levelType="TimeMonths" hideMemberIf="Never">
         </Level>
-        <Level name="Day" visible="true" table="dateto_dim" column="Day_Of_Year" uniqueMembers="false" levelType="TimeDays">
+        <Level name="Day" visible="true" table="dateto_dim" column="Day_Of_Year" type="String" uniqueMembers="false" levelType="TimeDays" hideMemberIf="Never">
         </Level>
       </Hierarchy>
     </Dimension>
-    <Dimension type="TimeDimension" visible="true" foreignKey="CREATE_CONTRACT_DATE_ID" name="ReservationDate">
-      <Hierarchy name="Default" visible="true" hasAll="true">
+    <Dimension type="TimeDimension" visible="true" foreignKey="CREATE_CONTRACT_DATE_ID" highCardinality="false" name="ReservationDate">
+      <Hierarchy name="Default" visible="true" hasAll="true" primaryKey="CREATE_CONTRACT_DATE_ID">
         <Table name="date_dim">
         </Table>
-        <Level name="Year" visible="true" table="date_dim" column="Year" uniqueMembers="false" levelType="TimeYears">
+        <Level name="Year" visible="true" table="date_dim" column="Year" type="String" uniqueMembers="false" levelType="TimeYears" hideMemberIf="Never">
         </Level>
-        <Level name="Quarter" visible="true" table="date_dim" column="Quarter" uniqueMembers="false" levelType="TimeQuarters">
+        <Level name="Quarter" visible="true" table="date_dim" column="Quarter" type="String" uniqueMembers="false" levelType="TimeQuarters" hideMemberIf="Never">
         </Level>
-        <Level name="Month" visible="true" table="date_dim" column="Month" uniqueMembers="false" levelType="TimeMonths">
+        <Level name="Month" visible="true" table="date_dim" column="Month" type="String" uniqueMembers="false" levelType="TimeMonths" hideMemberIf="Never">
         </Level>
-        <Level name="Day" visible="true" table="date_dim" column="Day_Of_Year" uniqueMembers="false" levelType="TimeDays">
+        <Level name="Day" visible="true" table="date_dim" column="Day_Of_Year" type="String" uniqueMembers="false" levelType="TimeDays" hideMemberIf="Never">
         </Level>
       </Hierarchy>
     </Dimension>
