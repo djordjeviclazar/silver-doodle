@@ -78,9 +78,11 @@
     </Measure>
     <Measure name="TOTAL_VISITORS" column="VISITORS" aggregator="sum" visible="true">
     </Measure>
-    <Measure name="GRADE_SUM" column="GRADES" aggregator="sum" visible="true">
+    <Measure name="GRADE_SUM" column="GRADES_TOTAL" aggregator="sum" visible="true">
     </Measure>
     <Measure name="NUMBER_OF_REVIEWS" column="REVIEW_NUMBER" aggregator="sum" visible="true">
+    </Measure>
+    <Measure name="GRADE_AVG" column="GRADES_AVG" aggregator="avg" visible="true">
     </Measure>
   </Cube>
 </Schema>
