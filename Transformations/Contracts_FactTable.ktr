@@ -1290,15 +1290,7 @@ FROM contract AS C LEFT OUTER JOIN review AS R ON C.Id = R.ContractId</sql>
       </field>
       <field>
         <column_name>GRADES_AVG</column_name>
-        <stream_name>GRADE</stream_name>
-      </field>
-      <field>
-        <column_name>REVIEW_NUMBER</column_name>
-        <stream_name>REVIEW_NUMBER</stream_name>
-      </field>
-      <field>
-        <column_name>GRADES_TOTAL</column_name>
-        <stream_name>GRADES</stream_name>
+        <stream_name>Gradea</stream_name>
       </field>
     </fields>
     <attributes/>
@@ -1310,7 +1302,7 @@ FROM contract AS C LEFT OUTER JOIN review AS R ON C.Id = R.ContractId</sql>
       </output>
     </remotesteps>
     <GUI>
-      <xloc>1056</xloc>
+      <xloc>1040</xloc>
       <yloc>208</yloc>
       <draw>Y</draw>
     </GUI>
