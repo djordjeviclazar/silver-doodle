@@ -1,0 +1,18 @@
+@relation heart_atack
+@attribute 'age' numeric
+@attribute 'sex' {M, F}
+@attribute 'cp' {A, B, C, D}
+@attribute 'trestbps' numeric
+@attribute 'chol' numeric
+@attribute 'fbs' {A, B}
+@attribute 'restecg' {A, B, C}
+@attribute 'thalach' numeric
+@attribute 'exang' {A, B}
+@attribute 'oldpeak' numeric
+@attribute 'slope' {A, B, C}
+@attribute 'ca' {A, B, C, D, E}
+@attribute 'thall' {A, B, C}
+@attribute 'target' {A, B}
+
+@data
+63,M,C,145,233,A,A,150,A,2.3,A,A,B,B
