@@ -20,9 +20,10 @@ namespace NormalizationCSV
             double[] minAttributes = getAttributes(minRow);
             double[] maxAttributes = getAttributes(maxRow);
 
-            string[] result = new string[(rows.Length - 3) * maxAttributes.Length];
+            string[] result = new string[((rows.Length - 3) * maxAttributes.Length) + 1];
 
             int i = 0;
+            result[0] = rows[0];
             foreach (var row in rows)
             {
                 if (i > 0 && i < rows.Length - 3)
@@ -33,20 +34,17 @@ namespace NormalizationCSV
                     int k = 0;
                     foreach (var atribute in attributes)
                     {
-                        if (i == 0 && k == 0)
+                        bool isNormalized = (minAttributes[k] < 0.1 && minAttributes[k] >= 0
+                                    && maxAttributes[k] <= 1 && maxAttributes[k] > 0.9);
+                        if (!isNormalized && k < attributes.Length - 1)
                         {
-                            result[0] = rows[0];
+                            // normalize attribute value
+                            double normalValue = (atribute - minAttributes[k]) / (maxAttributes[k] - minAttributes[k]);
+                            result[((i - 1) * attributes.Length + k) + 1] = normalValue + (k < attributes.Length - 1 ? "," : "\r\n");
                         }
                         else
                         {
-                            bool isNormalized = (minAttributes[k] < 0.1 && minAttributes[k] >= 0
-                                        && maxAttributes[k] <= 1 && maxAttributes[k] > 0.9);
-                            if (!isNormalized)
-                            {
-                                // normalize attribute value
-                                double normalValue = (atribute - minAttributes[k]) / (maxAttributes[k] - minAttributes[k]);
-                                result[(i * attributes.Length + k)] = normalValue + (k < attributes.Length - 1 ? "," : "\r\n");
-                            }
+                            result[((i - 1) * attributes.Length + k) + 1] = atribute + (k < attributes.Length - 1 ? "," : "\r\n");
                         }
                         k++;
                     }
