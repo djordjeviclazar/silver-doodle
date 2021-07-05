@@ -61,7 +61,7 @@ public class Classification
         Dataset<Row> oneRPredictions = oneRModel.transform(testDataset);
         Dataset<Row> oneRResults = oneRPredictions.select("prediction", "label");
 
-        double oneRAcc = evaluator.evaluate(oneRResults);
+        double oneRAcc = multiEvaluator.evaluate(oneRResults);
         System.out.println("OneR: \r\n");
         System.out.println("Accuracy: " + oneRAcc);
         System.out.println("--------------------------------");
