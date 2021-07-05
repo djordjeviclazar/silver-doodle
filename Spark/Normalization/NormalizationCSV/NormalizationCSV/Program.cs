@@ -36,7 +36,7 @@ namespace NormalizationCSV
                     {
                         bool isNormalized = (minAttributes[k] < 0.1 && minAttributes[k] >= 0
                                     && maxAttributes[k] <= 1 && maxAttributes[k] > 0.9);
-                        if (!isNormalized && k < attributes.Length - 1)
+                        if (!isNormalized && k < attributes.Length - 2)
                         {
                             // normalize attribute value
                             double normalValue = (atribute - minAttributes[k]) / (maxAttributes[k] - minAttributes[k]);
@@ -44,7 +44,16 @@ namespace NormalizationCSV
                         }
                         else
                         {
-                            result[((i - 1) * attributes.Length + k) + 1] = atribute + (k < attributes.Length - 1 ? "," : "\r\n");
+                            if (!isNormalized && k == attributes.Length - 1)
+                            {
+                                String value = atribute <= 1400 ? "Low" : "High";
+                                result[((i - 1) * attributes.Length + k) + 1] = value  + (k < attributes.Length - 1 ? "," : "\r\n");
+                            }
+                            else
+                            {
+                                result[((i - 1) * attributes.Length + k) + 1] = atribute + (k < attributes.Length - 1 ? "," : "\r\n");
+                            }
+                            
                         }
                         k++;
                     }
@@ -54,7 +63,7 @@ namespace NormalizationCSV
 
             string text =  String.Join("", result);
 
-            File.WriteAllText("E:\\GithubRepo\\SP\\silver-doodle\\Spark\\Normalization\\NormalizationCSV\\NormalizationCSV\\OnlineNewsPopularity\\OnlineNewsPopularity_Normalized.csv"
+            File.WriteAllText("E:\\GithubRepo\\SP\\silver-doodle\\Spark\\Normalization\\NormalizationCSV\\NormalizationCSV\\OnlineNewsPopularity\\OnlineNewsPopularity_NormalizedForArff.csv"
                                 , text);
         }
 
