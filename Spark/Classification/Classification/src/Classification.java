@@ -1,5 +1,7 @@
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.ml.classification.*;
@@ -21,6 +23,12 @@ public class Classification
 {
     public static void main(String[] args)
     {
+        Logger logger = Logger.getRootLogger();
+        logger.setLevel(Level.ERROR);
+
+        Logger.getLogger("org.apache.spark").setLevel(Level.WARN);
+        Logger.getLogger("org.spark-project").setLevel(Level.WARN);
+
         boolean pom = Files.exists(Path.of("E:\\GithubRepo\\SP\\silver-doodle\\Spark\\Classification\\Classification\\Resources\\OnlineNewsPopularity_Normalized.csv"));
         System.out.println(pom);
         SparkSession session = SparkSession
@@ -157,7 +165,7 @@ public class Classification
         Dataset<Row> rForestResults = rForestPredictions.select("prediction", "label");
         int FP = 0, TP = 0, FN = 0, TN = 0;
 
-        rForestPredictions.groupBy("prediction", "label").agg(functions.count("*").as("C"));
+        Dataset<Row> rForestConfusionMatrix = rForestPredictions.groupBy("prediction", "label").agg(functions.count("*").as("C"));
 
         BinaryClassificationMetrics rForestMetrics = new BinaryClassificationMetrics(rForestResults);
         Object rForestAcc = rForestMetrics.precisionByThreshold().toJavaRDD().collect();
@@ -173,8 +181,8 @@ public class Classification
         System.out.println("F-Measure: " + rForestFMeasure);
         System.out.println("Area under ROC: " + rForestAreaROC);
         System.out.println("Area under PR: " + rForestAreaPR);
-        System.out.println("Confusion matrix");
-        rForestPredictions.show();
+        System.out.println("Confusion matrix: ");
+        rForestConfusionMatrix.show();
         System.out.println("--------------------------------");
 
 
